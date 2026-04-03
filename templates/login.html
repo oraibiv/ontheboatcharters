@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% block title %}Log In — On The Boat Charters{% endblock %}
+{% block content %}
+<div class="page page-sm">
+    <div class="card auth-card">
+        <div class="card-body">
+            <h2>⚓ Welcome Back</h2>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" name="email" id="email" required autofocus placeholder="you@example.com">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" required placeholder="Your password">
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Log In</button>
+            </form>
+            <p class="auth-footer">Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

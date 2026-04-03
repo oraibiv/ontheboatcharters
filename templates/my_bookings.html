@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}My Bookings — On The Boat Charters{% endblock %}
+{% block content %}
+<div class="page page-md">
+    <h1>My Bookings</h1>
+    {% if bookings %}
+    <div class="card" style="margin-top:1.5rem;">
+        {% for b in bookings %}
+        <div class="booking-item">
+            <div style="flex:1;">
+                <div class="booking-trip">{{ b.trip_name }}</div>
+                <div class="booking-detail">
+                    {{ b.slot_date }} at {{ b.slot_time }} &middot; {{ b.num_passengers }} passenger{{ 's' if b.num_passengers != 1 }}
+                </div>
+                <div class="booking-detail">Ref: {{ b.booking_ref }}{% if b.invoice_number %} &middot; {{ b.invoice_number }}{% endif %}</div>
+            </div>
+            <span class="badge badge-{{ b.status }}">{{ b.status }}</span>
+            <div style="font-weight:700; font-size:1.1rem; color:var(--navy);">${{ "%.0f"|format(b.total_price) }}</div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty" style="margin-top:2rem;">
+        <div class="empty-icon">🚤</div>
+        <p>No bookings yet.</p>
+        <a href="{{ url_for('index') }}" class="btn btn-ocean" style="margin-top:1rem;">Browse Trips</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

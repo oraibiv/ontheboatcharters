@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}On The Boat Charters — Martha's Vineyard{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>On The Boat Charters</h1>
+    <p>Private fishing charters, sunset cruises & shuttles from Martha's Vineyard</p>
+</div>
+
+<div class="page">
+    <h2 style="text-align:center; margin-bottom:.25rem;">Our Trips</h2>
+    <p style="text-align:center; color:var(--text-muted); margin-bottom:1rem;">Choose your adventure — select a trip to see available dates.</p>
+
+    <div class="trip-grid">
+    {% for trip in trip_types %}
+        <a href="{{ url_for('book_trip', trip_type_id=trip.id) }}" class="card trip-card" style="text-decoration:none; color:inherit;">
+            <div class="card-body">
+                <div class="trip-icon">
+                    {% if 'fish' in trip.name|lower or 'tuna' in trip.name|lower %}🎣
+                    {% elif 'sunset' in trip.name|lower %}🌅
+                    {% elif 'shuttle' in trip.name|lower %}⛴️
+                    {% else %}🚤{% endif %}
+                </div>
+                <h3>{{ trip.name }}</h3>
+                <p style="font-size:.9rem; color:var(--text-muted);">{{ trip.description }}</p>
+                <div class="trip-meta">
+                    <span>⏱ {{ (trip.duration_minutes / 60)|round(1) }} hrs</span>
+                    <span>👥 Up to {{ trip.max_passengers }}</span>
+                </div>
+                <div class="trip-price">${{ "%.0f"|format(trip.base_price) }} <small>/person</small></div>
+                {% if upcoming.get(trip.id) %}
+                    <div class="trip-next">Next: {{ upcoming[trip.id]['slot_date'] }} at {{ upcoming[trip.id]['slot_time'] }}</div>
+                {% else %}
+                    <div class="trip-next trip-unavailable">No upcoming dates — check back soon</div>
+                {% endif %}
+            </div>
+        </a>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Book {{ trip.name }} — On The Boat Charters{% endblock %}
+
+{% block content %}
+<div class="page page-md">
+    <a href="{{ url_for('index') }}" style="font-size:.9rem; color:var(--text-muted);">← Back to trips</a>
+
+    <div class="card" style="margin-top:1rem;">
+        <div class="card-body">
+            <h1>{{ trip.name }}</h1>
+            <p style="color:var(--text-muted); margin:.5rem 0 1rem;">{{ trip.description }}</p>
+            <div class="trip-meta" style="margin-bottom:1.5rem;">
+                <span>⏱ {{ (trip.duration_minutes / 60)|round(1) }} hours</span>
+                <span>👥 Up to {{ trip.max_passengers }} passengers</span>
+                <span>💰 From ${{ "%.0f"|format(trip.base_price) }}/person</span>
+            </div>
+
+            {% if slots %}
+            <form method="POST" action="{{ url_for('confirm_booking', trip_type_id=trip.id) }}">
+                <h3 class="section-title">Choose a Date</h3>
+                <div class="slot-list">
+                {% for slot in slots %}
+                    {% set price = slot.custom_price if slot.custom_price else trip.base_price %}
+                    {% set spots = slot.spots_remaining if slot.spots_remaining is not none else trip.max_passengers %}
+                    <label class="slot-item" onclick="this.querySelector('input').checked=true; document.querySelectorAll('.slot-item').forEach(s=>s.classList.remove('selected')); this.classList.add('selected');">
+                        <input type="radio" name="slot_id" value="{{ slot.id }}" required>
+                        <div class="slot-date">{{ slot.slot_date }}</div>
+                        <div class="slot-time">{{ slot.slot_time }}</div>
+                        <div class="slot-spots">{{ spots }} spot{{ 's' if spots != 1 }} left</div>
+                        <div class="slot-price">${{ "%.0f"|format(price) }}</div>
+                    </label>
+                {% endfor %}
+                </div>
+
+                <div class="form-row" style="margin-top:1.5rem;">
+                    <div class="form-group">
+                        <label for="num_passengers">Number of Passengers</label>
+                        <select name="num_passengers" id="num_passengers">
+                            {% for i in range(1, trip.max_passengers + 1) %}
+                            <option value="{{ i }}">{{ i }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="special_requests">Special Requests</label>
+                        <input type="text" name="special_requests" id="special_requests" placeholder="Dietary needs, celebrations, etc.">
+                    </div>
+                </div>
+
+                {% if current_user %}
+                    <button type="submit" class="btn btn-primary btn-block" style="margin-top:1rem;">Confirm Booking</button>
+                {% else %}
+                    <a href="{{ url_for('login', next=request.url) }}" class="btn btn-primary btn-block" style="margin-top:1rem; text-align:center;">Log in to Book</a>
+                    <p class="form-hint" style="text-align:center; margin-top:.5rem;">Don't have an account? <a href="{{ url_for('signup') }}">Sign up</a> — it takes 30 seconds.</p>
+                {% endif %}
+            </form>
+            {% else %}
+            <div class="empty">
+                <div class="empty-icon">📅</div>
+                <p>No dates available yet for this trip.<br>Check back soon — the captain sets new dates regularly.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

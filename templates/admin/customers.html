@@ -1,0 +1,34 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Customers — On The Boat Charters{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>👥 Customers</h1>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+    {% if customers %}
+    <table class="data-table">
+        <thead>
+            <tr><th>Name</th><th>Email</th><th>Phone</th><th class="text-center">Bookings</th><th class="text-right">Total Spent</th><th>Since</th></tr>
+        </thead>
+        <tbody>
+        {% for c in customers %}
+        <tr>
+            <td><a href="{{ url_for('admin_customer_detail', user_id=c.id) }}" style="font-weight:600;">{{ c.name }}</a></td>
+            <td>{{ c.email }}</td>
+            <td>{{ c.phone or '—' }}</td>
+            <td class="text-center">{{ c.total_bookings }}</td>
+            <td class="text-right">${{ "{:,.0f}".format(c.total_spent) }}</td>
+            <td>{{ c.created_at[:10] if c.created_at else '—' }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="empty-icon">👥</div><p>No customers yet.</p></div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}

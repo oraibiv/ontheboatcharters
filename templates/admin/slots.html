@@ -1,0 +1,116 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Manage Slots — On The Boat Charters{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>📅 Available Slots</h1>
+</div>
+
+<div class="card" style="margin-bottom:2rem;">
+    <div class="card-body">
+        <h3 style="margin-bottom:1rem;">Add New Slot</h3>
+        <form method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="trip_type_id">Trip Type</label>
+                    <select name="trip_type_id" id="trip_type_id" required>
+                        {% for t in trip_types %}
+                        <option value="{{ t.id }}">{{ t.name }} (${{ "%.0f"|format(t.base_price) }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="slot_time">Departure Time</label>
+                    <input type="time" name="slot_time" id="slot_time" required value="07:00">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="slot_date">Start Date</label>
+                    <input type="date" name="slot_date" id="slot_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date <span style="font-weight:400; color:var(--text-muted);">(for bulk — leave empty for single)</span></label>
+                    <input type="date" name="end_date" id="end_date">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Days of Week <span style="font-weight:400; color:var(--text-muted);">(for bulk creation)</span></label>
+                <div class="day-checks">
+                    <label class="day-check"><input type="checkbox" name="days_of_week" value="1"> Mon</label>
+                    <label class="day-check"><input type="checkbox" name="days_of_week" value="2"> Tue</label>
+                    <label class="day-check"><input type="checkbox" name="days_of_week" value="3"> Wed</label>
+                    <label class="day-check"><input type="checkbox" name="days_of_week" value="4"> Thu</label>
+                    <label class="day-check"><input type="checkbox" name="days_of_week" value="5"> Fri</label>
+                    <label class="day-check"><input type="checkbox" name="days_of_week" value="6"> Sat</label>
+                    <label class="day-check"><input type="checkbox" name="days_of_week" value="7"> Sun</label>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="custom_price">Custom Price <span style="font-weight:400; color:var(--text-muted);">(blank = default)</span></label>
+                    <input type="number" name="custom_price" id="custom_price" step="0.01" placeholder="Leave blank for default">
+                </div>
+                <div class="form-group">
+                    <label for="spots_remaining">Spots <span style="font-weight:400; color:var(--text-muted);">(blank = max for trip type)</span></label>
+                    <input type="number" name="spots_remaining" id="spots_remaining" placeholder="Leave blank for default">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes <span style="font-weight:400; color:var(--text-muted);">(internal)</span></label>
+                <input type="text" name="notes" id="notes" placeholder="e.g. special event, tide info">
+            </div>
+
+            <button type="submit" class="btn btn-ocean">Create Slot(s)</button>
+        </form>
+    </div>
+</div>
+
+<!-- Existing slots -->
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        {% if slots %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Trip</th>
+                    <th class="text-right">Price</th>
+                    <th class="text-center">Booked</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for s in slots %}
+            <tr>
+                <td style="font-weight:600;">{{ s.slot_date }}</td>
+                <td>{{ s.slot_time }}</td>
+                <td>{{ s.trip_name }}</td>
+                <td class="text-right">${{ "%.0f"|format(s.custom_price if s.custom_price else s.base_price) }}</td>
+                <td class="text-center">{{ s.booking_count }}</td>
+                <td><span class="badge badge-{{ s.status }}">{{ s.status }}</span></td>
+                <td>
+                    {% if s.status == 'open' %}
+                    <form method="POST" action="{{ url_for('cancel_slot', slot_id=s.id) }}" style="display:inline;" onsubmit="return confirm('Cancel this slot? Any bookings will be cancelled too.')">
+                        <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                    </form>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">
+            <div class="empty-icon">📅</div>
+            <p>No upcoming slots. Use the form above to create your first one.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Trip Types — On The Boat Charters{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>🚤 Trip Types</h1>
+</div>
+
+<div class="card" style="margin-bottom:2rem;">
+    <div class="card-body">
+        <h3 style="margin-bottom:1rem;">Add / Edit Trip Type</h3>
+        <form method="POST">
+            <input type="hidden" name="trip_id" id="edit_trip_id" value="">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" name="name" id="edit_name" required placeholder="e.g. Bluefish Blitz">
+                </div>
+                <div class="form-group">
+                    <label for="base_price">Base Price ($)</label>
+                    <input type="number" name="base_price" id="edit_base_price" required step="0.01" placeholder="500">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="description" id="edit_description" rows="2" placeholder="What makes this trip special?"></textarea>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="duration_minutes">Duration (minutes)</label>
+                    <input type="number" name="duration_minutes" id="edit_duration" required value="120">
+                </div>
+                <div class="form-group">
+                    <label for="max_passengers">Max Passengers</label>
+                    <input type="number" name="max_passengers" id="edit_max_pass" required value="6">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-ocean">Save Trip Type</button>
+        </form>
+    </div>
+</div>
+
+<!-- Existing trip types -->
+<div class="card">
+    <div class="card-body" style="padding:0;">
+    <table class="data-table">
+        <thead><tr><th>Name</th><th class="text-right">Price</th><th class="text-center">Duration</th><th class="text-center">Max Pax</th><th>Status</th><th></th></tr></thead>
+        <tbody>
+        {% for t in trip_types %}
+        <tr>
+            <td style="font-weight:600;">{{ t.name }}</td>
+            <td class="text-right">${{ "%.0f"|format(t.base_price) }}</td>
+            <td class="text-center">{{ t.duration_minutes }} min</td>
+            <td class="text-center">{{ t.max_passengers }}</td>
+            <td><span class="badge badge-{{ 'open' if t.active else 'cancelled' }}">{{ 'Active' if t.active else 'Inactive' }}</span></td>
+            <td>
+                <button class="btn btn-sm btn-outline" onclick="editTrip({{ t.id }}, '{{ t.name }}', '{{ t.description|replace("'", "\\'") }}', {{ t.base_price }}, {{ t.duration_minutes }}, {{ t.max_passengers }})">Edit</button>
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<script>
+function editTrip(id, name, desc, price, dur, maxP) {
+    document.getElementById('edit_trip_id').value = id;
+    document.getElementById('edit_name').value = name;
+    document.getElementById('edit_description').value = desc;
+    document.getElementById('edit_base_price').value = price;
+    document.getElementById('edit_duration').value = dur;
+    document.getElementById('edit_max_pass').value = maxP;
+    window.scrollTo({top: 0, behavior: 'smooth'});
+}
+</script>
+{% endblock %}

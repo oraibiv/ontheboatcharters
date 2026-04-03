@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block body_class %}admin-page{% endblock %}
+{% block content %}
+<div class="admin-layout">
+    <aside class="admin-sidebar">
+        <div class="sidebar-label">Overview</div>
+        <a href="{{ url_for('admin_dashboard') }}" class="{{ 'active' if request.endpoint == 'admin_dashboard' }}">📊 Dashboard</a>
+        <div class="sidebar-label">Manage</div>
+        <a href="{{ url_for('admin_slots') }}" class="{{ 'active' if request.endpoint == 'admin_slots' }}">📅 Slots</a>
+        <a href="{{ url_for('admin_bookings') }}" class="{{ 'active' if request.endpoint == 'admin_bookings' }}">📋 Bookings</a>
+        <a href="{{ url_for('admin_customers') }}" class="{{ 'active' if request.endpoint in ('admin_customers', 'admin_customer_detail') }}">👥 Customers</a>
+        <a href="{{ url_for('admin_invoices') }}" class="{{ 'active' if request.endpoint == 'admin_invoices' }}">💰 Invoices</a>
+        <div class="sidebar-label">Settings</div>
+        <a href="{{ url_for('admin_trips') }}" class="{{ 'active' if request.endpoint == 'admin_trips' }}">🚤 Trip Types</a>
+        <a href="{{ url_for('admin_email_settings') }}" class="{{ 'active' if request.endpoint == 'admin_email_settings' }}">📧 Email</a>
+    </aside>
+    <div class="admin-content">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

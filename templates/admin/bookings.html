@@ -1,0 +1,51 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}Bookings — On The Boat Charters{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>📋 All Bookings</h1>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+    {% if bookings %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Ref</th><th>Date</th><th>Trip</th><th>Customer</th>
+                <th class="text-center">Pax</th><th class="text-right">Total</th>
+                <th>Invoice</th><th>Status</th><th></th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for b in bookings %}
+        <tr>
+            <td style="font-weight:600; font-size:.85rem;">{{ b.booking_ref }}</td>
+            <td>{{ b.slot_date }} {{ b.slot_time }}</td>
+            <td>{{ b.trip_name }}</td>
+            <td><a href="{{ url_for('admin_customer_detail', user_id=b.user_id) }}">{{ b.customer_name }}</a></td>
+            <td class="text-center">{{ b.num_passengers }}</td>
+            <td class="text-right">${{ "%.0f"|format(b.total_price) }}</td>
+            <td>
+                {% if b.invoice_number %}
+                <span class="badge badge-{{ b.invoice_status }}">{{ b.invoice_status }}</span>
+                {% else %}—{% endif %}
+            </td>
+            <td><span class="badge badge-{{ b.status }}">{{ b.status }}</span></td>
+            <td>
+                {% if b.status in ('confirmed', 'pending') %}
+                <form method="POST" action="{{ url_for('cancel_booking', booking_id=b.id) }}" style="display:inline;" onsubmit="return confirm('Cancel this booking?')">
+                    <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                </form>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty"><div class="empty-icon">📋</div><p>No bookings yet.</p></div>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
