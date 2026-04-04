@@ -8,6 +8,4 @@ COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN python -c "from app import init_db; init_db()"
-
-CMD ["sh", "-c", "gunicorn -b 0.0.0.0:${PORT:-8080} -w 2 --timeout 120 app:app"]
+CMD ["sh", "-c", "python app.py"]
