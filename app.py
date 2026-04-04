@@ -11,7 +11,7 @@ from datetime import datetime, date, timedelta
 from functools import wraps
 from flask import (
     Flask, render_template, request, redirect, url_for, flash,
-    session, jsonify, g, abort
+    session, jsonify, g, abort, send_file
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from mailer import (
@@ -704,6 +704,47 @@ def api_revenue_chart():
         """, (d,)).fetchone()['total']
         data.append({'date': d, 'revenue': rev})
     return jsonify(data)
+
+
+@app.route('/admin/backup')
+@admin_required
+def admin_backup():
+    """Download a backup copy of the database."""
+    import shutil
+    db_path = app.config['DATABASE']
+    backup_path = db_path + '.backup'
+    # Use sqlite3 backup API for a safe copy
+    src = sqlite3.connect(db_path)
+    dst = sqlite3.connect(backup_path)
+    src.backup(dst)
+    dst.close()
+    src.close()
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    return send_file(
+        backup_path,
+        as_attachment=True,
+        download_name=f'ontheboat_backup_{timestamp}.db',
+        mimetype='application/x-sqlite3'
+    )
+
+
+@app.route('/admin/export')
+@admin_required
+def admin_export():
+    """Export all data as JSON for portability."""
+    db = get_db()
+    tables = ['users', 'trip_types', 'available_slots', 'bookings', 'invoices']
+    export = {}
+    for table in tables:
+        rows = db.execute(f"SELECT * FROM {table}").fetchall()
+        export[table] = [dict(row) for row in rows]
+    export['exported_at'] = datetime.now().isoformat()
+    export['total_records'] = sum(len(v) for k, v in export.items() if isinstance(v, list))
+
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    response = jsonify(export)
+    response.headers['Content-Disposition'] = f'attachment; filename=ontheboat_export_{timestamp}.json'
+    return response
 
 
 # ---------------------------------------------------------------------------

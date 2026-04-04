@@ -4,7 +4,11 @@
 {% block admin_content %}
 <div class="admin-header">
     <h1>Dashboard</h1>
-    <span style="color:var(--text-muted);">{{ now.strftime('%A, %B %d, %Y') }}</span>
+    <div style="display:flex; align-items:center; gap:.75rem;">
+        <span style="color:var(--text-muted);">{{ now.strftime('%A, %B %d, %Y') }}</span>
+        <a href="{{ url_for('admin_backup') }}" class="btn btn-sm btn-outline" title="Download database backup">💾 Backup</a>
+        <a href="{{ url_for('admin_export') }}" class="btn btn-sm btn-outline" title="Export all data as JSON">📤 Export</a>
+    </div>
 </div>
 
 <!-- Revenue stats -->

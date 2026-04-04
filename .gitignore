@@ -1,0 +1,26 @@
+# Virtual environment
+venv/
+.venv/
+
+# Database (Railway uses ephemeral storage — see README)
+*.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Environment
+.env
+.env.sh
+
+# Backups
+backups/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

@@ -13,6 +13,7 @@
         <div class="sidebar-label">Settings</div>
         <a href="{{ url_for('admin_trips') }}" class="{{ 'active' if request.endpoint == 'admin_trips' }}">🚤 Trip Types</a>
         <a href="{{ url_for('admin_email_settings') }}" class="{{ 'active' if request.endpoint == 'admin_email_settings' }}">📧 Email</a>
+        <a href="{{ url_for('admin_backup') }}">💾 Backup DB</a>
     </aside>
     <div class="admin-content">
         {% block admin_content %}{% endblock %}
